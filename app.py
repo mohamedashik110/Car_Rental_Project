@@ -13,7 +13,7 @@ init_db()
 # ---------------- HOME ----------------
 @app.route('/')
 def home():
-    return redirect('/dashboard')
+    return redirect('/login')
 
 # ---------------- REGISTER ----------------
 @app.route('/register', methods=['GET', 'POST'])
@@ -74,6 +74,9 @@ def logout():
 # ---------------- DASHBOARD ----------------
 @app.route('/dashboard')
 def dashboard():
+    if 'username' not in session:
+        return redirect('/login')
+
     total_bookings = db_session.query(Booking).count()
     total_cars = db_session.query(Car).count()
     available_cars = db_session.query(Car).filter(Car.status == "Available").count()
@@ -143,12 +146,16 @@ def dashboard():
 # ---------------- CARS ----------------
 @app.route('/cars')
 def cars():
+    if 'username' not in session:
+      return redirect('/login')
     cars = db_session.query(Car).all()
     username = session.get('username', 'Guest')
     return render_template("cars.html", cars=cars, username=username)
 
 @app.route('/add_car', methods=['GET', 'POST'])
 def add_car():
+    if 'username' not in session:
+        return redirect('/login')
     if request.method == 'POST':
         new_car = Car(
             name=request.form['name'],
@@ -165,6 +172,9 @@ def add_car():
 
 @app.route('/edit_car/<int:car_id>', methods=['GET', 'POST'])
 def edit_car(car_id):
+    if 'username' not in session:
+        return redirect('/login')
+
     car = db_session.query(Car).get(car_id)
     if not car:
         return "Car not found!"
@@ -181,6 +191,9 @@ def edit_car(car_id):
 
 @app.route('/delete_car/<int:car_id>')
 def delete_car(car_id):
+    if 'username' not in session:
+        return redirect('/login')
+
     car = db_session.query(Car).get(car_id)
     if car:
         db_session.delete(car)
@@ -190,6 +203,9 @@ def delete_car(car_id):
 # ---------------- BOOKINGS ----------------
 @app.route('/book_car/<int:car_id>', methods=['GET', 'POST'])
 def book_car(car_id):
+    if 'username' not in session:
+        return redirect('/login')
+    
     car = db_session.query(Car).get(car_id)
     if not car:
         return f"Car with ID {car_id} not found!"
@@ -236,12 +252,18 @@ def book_car(car_id):
 
 @app.route('/bookings')
 def bookings():
+    if 'username' not in session:
+        return redirect('/login')
+
     bookings = db_session.query(Booking).all()
     username = session.get('username', 'Guest')
     return render_template("bookings.html", bookings=bookings, username=username)
 
 @app.route('/return_car/<int:booking_id>')
 def return_car(booking_id):
+    if 'username' not in session:
+        return redirect('/login')
+
     booking = db_session.query(Booking).get(booking_id)
     if booking:
         car = db_session.query(Car).get(booking.car_id)
@@ -254,12 +276,17 @@ def return_car(booking_id):
 # ---------------- CUSTOMERS ----------------
 @app.route('/customers')
 def customers():
+    if 'username' not in session:
+        return redirect('/login')
     all_customers = db_session.query(Customer).all()
     username = session.get('username', 'Guest')
     return render_template("customers.html", customers=all_customers, username=username)
 
 @app.route('/add_customer', methods=['GET', 'POST'])
 def add_customer():
+    if 'username' not in session:
+        return redirect('/login')
+
     if request.method == 'POST':
         new_c = Customer(
             name=request.form['name'],
@@ -275,6 +302,8 @@ def add_customer():
 # ---------------- PAYMENTS ----------------
 @app.route('/payments')
 def payments():
+    if 'username' not in session:
+        return redirect('/login')
     all_payments = db_session.query(Payment).all()
     for p in all_payments:
         if isinstance(p.payment_date, str):
@@ -288,6 +317,9 @@ def payments():
 
 @app.route('/add_payment', methods=['GET', 'POST'])
 def add_payment():
+    if 'username' not in session:
+        return redirect('/login')
+
     bookings = db_session.query(Booking).all()
     username = session.get('username', 'Guest')
     if request.method == 'POST':
@@ -319,6 +351,9 @@ def add_payment():
 
 @app.route('/edit_payment/<int:payment_id>', methods=['GET', 'POST'])
 def edit_payment(payment_id):
+    if 'username' not in session:
+        return redirect('/login')
+
     payment = db_session.query(Payment).get(payment_id)
     if not payment:
         flash("Payment not found!", "error")
@@ -363,6 +398,9 @@ def edit_payment(payment_id):
 
 @app.route('/delete_payment/<int:payment_id>')
 def delete_payment(payment_id):
+    if 'username' not in session:
+        return redirect('/login')
+
     payment = db_session.query(Payment).get(payment_id)
     if payment:
         db_session.delete(payment)
@@ -372,6 +410,8 @@ def delete_payment(payment_id):
 # ---------------- RETURNS ----------------
 @app.route('/returns')
 def returns():
+    if 'username' not in session:
+        return redirect('/login')
     returned_bookings = db_session.query(Booking).filter(Booking.status == "Returned").all()
     username = session.get('username', 'Guest')
     return render_template("returns.html", returned=returned_bookings, username=username)
