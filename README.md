@@ -9,20 +9,14 @@ A full-stack web application for managing vehicle rentals, built with Flask and 
 
 ## Features
 - User authentication with hashed passwords
-- Vehicle inventory management (add, edit, delete cars)
+- Vehicle inventory management
 - Full booking lifecycle — Reserve → Active → Returned
 - Payment tracking per booking
-- Dashboard with real-time revenue analytics and booking trends
-- Double booking prevention
+- Dashboard with real-time revenue analytics
 
 ## How to Run
-```bash
-git clone https://github.com/mohamedashik110/Car_Rental_Project.git
-cd Car_Rental_Project
+Clone the repo and run:
 pip install -r requirements.txt
 python app.py
-```
-Then open http://127.0.0.1:5000
 
-## Database
-Auto-created on first run using SQLAlchemy.
+Then open http://127.0.0.1:5000
