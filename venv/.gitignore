@@ -1,5 +1,0 @@
-*.db
-*.db-journal
-venv/
-__pycache__/
-*.pyc
