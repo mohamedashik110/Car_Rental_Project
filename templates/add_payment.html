@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Add Payment</h2>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category=='success' else 'danger' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Select Booking</label>
+            <select name="booking_id" class="form-control" required>
+                <option value="" disabled selected>-- Select Booking --</option>
+                {% for b in bookings %}
+                <option value="{{ b.id }}">
+                    Booking #{{ b.id }} — {{ b.customer.name }} — {{ b.car.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Amount</label>
+            <input type="number" name="amount" step="0.01" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Payment Status</label>
+            <select name="status" class="form-control">
+                <option value="Paid" selected>Paid</option>
+                <option value="Pending">Pending</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Payment Date</label>
+            <input type="date" name="payment_date" class="form-control" required value="{{ datetime.utcnow().strftime('%Y-%m-%d') }}">
+        </div>
+
+        <button class="btn btn-primary">Add Payment</button>
+        <a href="/payments" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

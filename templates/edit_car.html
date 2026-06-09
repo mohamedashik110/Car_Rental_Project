@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cars</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Car Rental</h2>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/cars" class="active">Cars</a>
+    <a href="/bookings">Bookings</a>
+</div>
+
+<div class="main">
+    <h1>Cars</h1>
+
+    <a class="button" href="/add_car">+ Add Car</a>
+
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Brand</th>
+            <th>Model</th>
+            <th>Number Plate</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for car in cars %}
+        <tr>
+            <td>{{ car.name }}</td>
+            <td>{{ car.brand }}</td>
+            <td>{{ car.model }}</td>
+            <td>{{ car.number_plate }}</td>
+            <td>{{ car.status }}</td>
+
+            <td>
+                <a href="/edit_car/{{ car.id }}">Edit</a> |
+                <a href="/delete_car/{{ car.id }}">Delete</a> |
+                <a href="/book_car/{{ car.id }}">Book</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+</body>
+</html>

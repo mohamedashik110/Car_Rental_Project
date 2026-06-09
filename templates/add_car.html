@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Car</h1>
+
+<form method="POST">
+    <label>Name:</label><br>
+    <input type="text" name="name" required><br><br>
+
+    <label>Brand:</label><br>
+    <input type="text" name="brand" required><br><br>
+
+    <label>Model:</label><br>
+    <input type="text" name="model" required><br><br>
+
+    <label>Number Plate:</label><br>
+    <input type="text" name="number_plate" required><br><br>
+
+    <button type="submit">Add Car</button>
+</form>
+
+<a href="{{ url_for('cars') }}">← Back to Cars</a>
+{% endblock %}

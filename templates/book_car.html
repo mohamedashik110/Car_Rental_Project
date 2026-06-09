@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Book Car: {{ car.name }}</h1>
+
+<form method="POST">
+    <!-- Select Existing Customer -->
+    <div>
+        <label for="customer_select">Select Existing Customer:</label><br>
+        <select name="customer_id" id="customer_select">
+            <option value="">-- Select Customer --</option>
+            {% for customer in customers %}
+                <option value="{{ customer.id }}">{{ customer.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <br>
+
+    <!-- Add New Customer -->
+    <div>
+        <label for="new_customer">Or Add New Customer:</label><br>
+        <input type="text" name="new_customer_name" id="new_customer" placeholder="Enter new customer name">
+    </div>
+    <br>
+
+    <!-- Booking Dates -->
+    <div>
+        <label for="start_date">Start Date:</label><br>
+        <input type="date" name="start_date" id="start_date" required>
+    </div>
+    <br>
+
+    <div>
+        <label for="end_date">End Date:</label><br>
+        <input type="date" name="end_date" id="end_date" required>
+    </div>
+    <br>
+
+    <button type="submit">Book Car</button>
+</form>
+
+<br>
+<a href="/cars">Back to Cars</a>
+{% endblock %}

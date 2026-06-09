@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Cars</h1>
+<a class="button" href="/add_car" style="display:inline-block; margin-bottom:10px; padding:8px 12px; background:#4caf50; color:white; border-radius:5px; text-decoration:none;">+ Add Car</a>
+
+<table border="1" cellpadding="8" cellspacing="0" style="width:100%; background:white; border-collapse:collapse;">
+    <tr>
+        <th>Name</th>
+        <th>Brand</th>
+        <th>Model</th>
+        <th>Number Plate</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    {% for car in cars %}
+    <tr>
+        <td>{{ car.name }}</td>
+        <td>{{ car.brand }}</td>
+        <td>{{ car.model }}</td>
+        <td>{{ car.number_plate }}</td>
+        <td>{{ car.status }}</td>
+        <td>
+            <a href="/edit_car/{{ car.id }}">Edit</a> |
+            <a href="/delete_car/{{ car.id }}">Delete</a> |
+            <a href="/book_car/{{ car.id }}">Book</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+

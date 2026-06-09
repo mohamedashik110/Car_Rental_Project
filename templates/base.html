@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            background: #f4f6fb;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #2e3a47;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 20px;
+            color: #d0d6e1;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #1f2933;
+            color: white;
+        }
+
+        /* Main content */
+        .main {
+            margin-left: 240px; /* same as sidebar width */
+            padding: 20px;
+            flex: 1;
+        }
+
+        .topbar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+        }
+
+        .topbar .username {
+            font-weight: 600;
+            color: #2e3a47;
+        }
+
+        .topbar .username a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #f44336;
+            font-weight: 500;
+        }
+
+        .flash {
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .flash.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .flash.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 10px solid #4caf50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2e3a47;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>🚗 Car Rental</h2>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('cars') }}">Cars</a>
+        <a href="{{ url_for('bookings') }}">Bookings</a>
+        <a href="{{ url_for('customers') }}">Customers</a>
+        <a href="{{ url_for('payments') }}">Payments</a>
+        <a href="{{ url_for('returns') }}">Returns</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+
+        <!-- Topbar with username -->
+        <div class="topbar">
+            <div>Car Rental Dashboard</div>
+            <div class="username">
+                {% if session.get('username') %}
+                    Hello, {{ session.get('username') }} |
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

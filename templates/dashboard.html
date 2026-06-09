@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.dashboard-container {
+    padding: 20px;
+    background: #f5f7fa;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-header h2 {
+    font-size: 28px;
+    color: #333;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-gap: 20px;
+}
+
+.card {
+    background: #fff;
+    padding: 25px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.card h1 {
+    font-size: 32px;
+    margin: 5px 0;
+    color: #222;
+}
+
+.card small {
+    color: #888;
+}
+
+.chart-box {
+    height: 220px;
+    margin-top: 15px;
+}
+
+.legend-box {
+    margin-top: 10px;
+}
+
+.legend-box span {
+    margin-right: 10px;
+    font-size: 14px;
+}
+</style>
+
+<div class="dashboard-container">
+
+    <div class="dashboard-header">
+        <h2>Car Rental Management & Analytics Dashboard</h2>
+        <div>Welcome, {{ username }}</div>
+    </div>
+
+    <div class="cards-grid">
+
+        <!-- BOOKINGS CARD -->
+        <div class="card">
+            <div class="title">Bookings</div>
+            <h1>{{ total_bookings }}</h1>
+            <small>Daily</small>
+            <div class="chart-box">
+                <canvas id="bookingsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- REVENUE BREAKDOWN -->
+        <div class="card">
+            <div class="title">Revenue Breakdown</div>
+            <h1>${{ monthly_revenue }}</h1>
+            <small>Monthly</small>
+            <div class="chart-box">
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <div class="legend-box" id="revenueLegend"></div>
+        </div>
+
+        <!-- MOST RENTED CARS -->
+        <div class="card">
+            <div class="title">Most Rented Cars</div>
+            <div class="chart-box">
+                <canvas id="mostRentedChart"></canvas>
+            </div>
+        </div>
+
+        <!-- CAR AVAILABILITY -->
+        <div class="card">
+            <div class="title">Car Availability</div>
+            <h1>{{ available_percent }}%</h1>
+            <small>Available</small>
+            <div class="chart-box">
+                <canvas id="availabilityChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+/* BOOKINGS LINE CHART */
+new Chart(document.getElementById('bookingsChart'), {
+    type: 'line',
+    data: {
+        labels: {{ daily_labels|safe }},
+        datasets: [{
+            label: "Bookings",
+            data: {{ daily_values|safe }},
+            borderColor: "#4169e1",
+            backgroundColor: "rgba(65,105,225,0.1)",
+            fill: true,
+            tension: 0.3,
+            borderWidth: 3,
+            pointRadius: 4
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+
+/* REVENUE DONUT CHART WITH CAR NAMES */
+const carNames = {{ car_names|safe }};
+const revenueData = {{ revenue_data|safe }};
+const totalRevenue = revenueData.reduce((a,b) => a+b, 0) || 1;
+
+// Generate colors dynamically
+const colors = [];
+for (let i=0; i<carNames.length; i++) {
+    const hue = Math.floor(i * (360 / carNames.length));
+    colors.push(`hsl(${hue}, 70%, 50%)`);
+}
+
+new Chart(document.getElementById('revenueChart'), {
+    type: 'doughnut',
+    data: {
+        labels: carNames,
+        datasets: [{
+            data: revenueData.map(v => v || 0),
+            backgroundColor: colors,
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        cutout: '70%',
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let value = context.raw;
+                        let percent = ((value / totalRevenue) * 100).toFixed(1);
+                        return context.label + ': $' + value + ' (' + percent + '%)';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Generate legend
+const legendContainer = document.getElementById('revenueLegend');
+carNames.forEach((name, i) => {
+    const span = document.createElement('span');
+    span.textContent = '● ' + name;
+    span.style.color = colors[i];
+    legendContainer.appendChild(span);
+});
+
+/* MOST RENTED CARS */
+new Chart(document.getElementById('mostRentedChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ rented_car_names|safe }},
+        datasets: [{
+            data: {{ rented_car_counts|safe }},
+            backgroundColor: "#00bcd4"
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+
+/* CAR AVAILABILITY GAUGE */
+new Chart(document.getElementById('availabilityChart'), {
+    type: 'doughnut',
+    data: {
+        datasets: [{
+            data: [{{ available_percent }}, {{ 100 - available_percent }}],
+            backgroundColor: ["#2ecc71", "#e0e0e0"],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        circumference: 180,
+        rotation: 270,
+        cutout: '70%',
+        plugins: { legend: { display: false } }
+    }
+});
+</script>
+
+{% endblock %}

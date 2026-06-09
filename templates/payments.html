@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h1>Payments</h1>
+
+    <!-- Add Payment Button -->
+    <a href="{{ url_for('add_payment') }}" class="btn btn-primary mb-3">
+        + Add Payment
+    </a>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category=='success' else 'danger' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Booking</th>
+                <th>Customer</th>
+                <th>Car</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Payment Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in payments %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>#{{ p.booking.id }}</td>
+                <td>{{ p.booking.customer.name }}</td>
+                <td>{{ p.booking.car.name }}</td>
+                <td>{{ "%.2f"|format(p.amount) }}</td>
+                <td>{{ p.status }}</td>
+                <td>{{ p.payment_date.strftime('%Y-%m-%d') if p.payment_date else '' }}</td>
+                <td>
+                    <a href="{{ url_for('edit_payment', payment_id=p.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{{ url_for('delete_payment', payment_id=p.id) }}"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Delete this payment?');">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+
